@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Administrator;
+use App\Models\Seller;
+
 use Illuminate\Http\Request;
 
-class AdministratorController extends Controller
+class SellerController extends Controller
 {
+    public function __construct(Seller $seller) {
+        $this->seller = $seller;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +18,8 @@ class AdministratorController extends Controller
      */
     public function index()
     {
-        //
+        $sellers = $this->seller->all();
+        return $sellers;
     }
 
     /**
@@ -30,32 +35,34 @@ class AdministratorController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\StoresellerRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        //
+        $seller = $this->seller->create($request->all());
+        return $seller;
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Administrator  $administrator
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Administrator $administrator)
+    public function show($id)
     {
-        //
+        $seller = $this->seller->find($id);
+        return $seller;
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Administrator  $administrator
+     * @param  \App\Models\seller  $seller
      * @return \Illuminate\Http\Response
      */
-    public function edit(Administrator $administrator)
+    public function edit(seller $seller)
     {
         //
     }
@@ -63,23 +70,27 @@ class AdministratorController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Administrator  $administrator
+     * @param  \App\Http\Requests\UpdatesellerRequest  $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Administrator $administrator)
+    public function update(Request $request, $id)
     {
-        //
+        $seller = $this->seller->find($id);
+        $seller->update($request->all());
+        return $seller;
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Administrator  $administrator
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Administrator $administrator)
+    public function destroy($id)
     {
-        //
+        $seller = $this->seller->find($id);
+        $seller->delete();
+        return ['msg' => 'Removido com sucesso!!!'];
     }
 }

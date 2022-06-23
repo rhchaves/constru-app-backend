@@ -5,13 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Administrator extends Model
+class product extends Model
 {
     protected $fillable = [
         'name',
-        'cpf',
-        'email',
-        'password',
+        'label',
+        'description',
+        'category',
+        'price',
+        'productMark',
+        'img',
     ];
     use HasFactory;
 }
