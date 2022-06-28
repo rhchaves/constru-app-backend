@@ -19,7 +19,7 @@ class ProductController extends Controller
     public function index()
     {
         $products = $this->product->all();
-        return $products;
+        return response()->json($products, 200);
     }
 
     /**
@@ -40,8 +40,23 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $product = $this->product->create($request->all());
-        return $product;
+        $request->validate($this->product->rules(), $this->product->feedback());
+
+        $image = $request->file('image');
+        $imageUrn = $image->store('images', 'public');
+
+        $product = $this->product->create([
+            'name' => $request->name,
+            'label' => $request->label,
+            'skuId' => $request->skuId,
+            'description' => $request->description,
+            'category' => $request->category,
+            'price' => $request->price,
+            'productMark' => $request->productMark,
+            'image' => $imageUrn,
+        ]);
+
+        return response()->json($product, 201);
     }
 
     /**
@@ -53,7 +68,10 @@ class ProductController extends Controller
     public function show($id)
     {
         $product = $this->product->find($id);
-        return $product;
+        if ($product === null) {
+            return response()->json(['erro' => 'recurso não encontrado'], 404);
+        }
+        return response()->json($product, 200);
     }
 
     /**
@@ -77,8 +95,44 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         $product = $this->product->find($id);
-        $product->update($request->all());
-        return $product;
+
+        if ($product === null) {
+            return response()->json(['erro' => 'recurso não encontrado'], 404);
+        }
+
+        if ($request->method() === 'PATCH') {
+
+            $dynamicRules = array();
+
+            foreach($product->rules() as $input => $rule) {
+
+                if (array_key_exists($input, $request->all())) {
+                    $dynamicRules[$input] = $rule;
+                }
+
+            }
+
+            $request->validate($dynamicRules, $product->feedback());
+
+        } else {
+            $request->validate($product->rules(), $product->feedback());
+        }
+
+        $image = $request->file('image');
+        $imageUrn = $image->store('images', 'public');
+
+        $product->update([
+            'name' => $request->name,
+            'label' => $request->label,
+            'skuId' => $request->skuId,
+            'description' => $request->description,
+            'category' => $request->category,
+            'price' => $request->price,
+            'productMark' => $request->productMark,
+            'image' => $imageUrn,
+        ]);
+
+        return response()->json($product, 200);
     }
 
     /**
@@ -90,7 +144,10 @@ class ProductController extends Controller
     public function destroy($id)
     {
         $product = $this->product->find($id);
+        if ($product === null) {
+            return response()->json(['erro' => 'recurso não encontrado'], 404);
+        }
         $product->delete();
-        return ['msg' => 'Removido com sucesso!!!'];
+        return response()->json(['msg' => 'Removido com sucesso!!!'], 200);
     }
 }

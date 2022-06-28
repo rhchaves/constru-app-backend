@@ -17,11 +17,12 @@ class ProductSeeder extends Seeder
         // Product::create([
         //     'name' => 'conexao-t-rosca3/4',
         //     'label' => 'Conexão "T" com rosca 3/4"',
+        //     'skuId' => '123',
         //     'description' => 'Conexão em formato c/ rosca em "T" para toneiras',
         //     'category' => 'hidraulica',
-        //     'price' => '123,23',
+        //     'price' => '12',
         //     'productMark' => 'Tigre',
-        //     'img' => 'url/teste',
+        //     'image' => 'C:\Users\Rodolfo Chaves\Downloads\img\conexão-t-tigre.jpg',
         // ]);
     }
 }

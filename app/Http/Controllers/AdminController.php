@@ -20,7 +20,7 @@ class AdminController extends Controller
     public function index()
     {
         $admins = $this->admin->all();
-        return $admins;
+        return response()->json($admins, 200);
     }
 
     /**
@@ -41,8 +41,10 @@ class AdminController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate($this->admin->rules(), $this->admin->feedback());
+
         $admin = $this->admin->create($request->all());
-        return $admin;
+        return response()->json($admin, 201);
     }
 
     /**
@@ -54,7 +56,10 @@ class AdminController extends Controller
     public function show($id)
     {
         $admin = $this->admin->find($id);
-        return $admin;
+        if ($admin === null) {
+            return response()->json(['erro' => 'recurso não encontrado'], 404);
+        }
+        return response()->json($admin, 200);
     }
 
     /**
@@ -78,8 +83,30 @@ class AdminController extends Controller
     public function update(Request $request, $id)
     {
         $admin = $this->admin->find($id);
+        if ($admin === null) {
+            return response()->json(['erro' => 'recurso não encontrado'], 404);
+        }
+
+        if ($request->method() === 'PATCH') {
+
+            $dynamicRules = array();
+
+            foreach($admin->rules() as $input => $rule) {
+
+                if (array_key_exists($input, $request->all())) {
+                    $dynamicRules[$input] = $rule;
+                }
+
+            }
+
+            $request->validate($dynamicRules, $admin->feedback());
+
+        } else {
+            $request->validate($admin->rules(), $admin->feedback());
+        }
+
         $admin->update($request->all());
-        return $admin;
+        return response()->json($admin, 200);
     }
 
     /**
@@ -91,7 +118,10 @@ class AdminController extends Controller
     public function destroy($id)
     {
         $admin = $this->admin->find($id);
+        if ($admin === null) {
+            return response()->json(['erro' => 'recurso não encontrado'], 404);
+        }
         $admin->delete();
-        return ['msg' => 'Removido com sucesso!!!'];
+        return response()->json(['msg' => 'Removido com sucesso!!!'], 200);
     }
 }
